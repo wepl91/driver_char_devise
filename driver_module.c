@@ -33,7 +33,10 @@ static int msg_length = 0;
 static struct file_operations fops = {
 	.owner = THIS_MODULE,
 	/* OPS ??? */
-        .release = device_release
+  .release = device_release,
+  .read    = device_read,
+  .write   = device_write,
+  .open    = device_open,
 };
 
 /*
@@ -81,8 +84,9 @@ void cleanup_module(void)
  */
 static int device_open(struct inode *inode, struct file *filp)
 {
-    if (Device_Open)
+    if (Device_Open) {
         return -EBUSY;
+    }
 
     return SUCCESS;
 }
@@ -104,19 +108,29 @@ static ssize_t device_read(struct file *filp, /* see include/linux/fs.h   */
                            size_t length,     /* length of the buffer     */
                            loff_t *offset)
 {
-    /*
-     * Qué debemos hacer ??? 
-     */
+    /* If position is behind the end of a file we have nothing to read */
+    if( *offset >= sizeof(msg) ) {
+        return 0;
+    }
+    
+    /* If a user tries to read more than we have, read only as many bytes as we have */
+    if( *offset + length > sizeof(msg) ) {
+        msg_length = sizeof(msg) - *offset;
+    }
 
-    return bytes_read;
+    if( copy_to_user(buffer, msg + *offset, msg_length) != 0 ) {
+        return -EFAULT;    
+    }
+
+    /* Move reading position */
+    *offset += msg_length;
+    return msg_length;
 }
 
 /*
  * Called when a process writes to dev file: echo "hi" > /dev/UNGS
  */
 static ssize_t device_write(struct file *filp, const char *tmp, size_t length, loff_t *offset) {
-
-    printk(KERN_INFO "Message writen to device: ");
 	/* Que debemos hacer ? */
-    return length;
+  return length;
 }
