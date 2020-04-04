@@ -131,6 +131,9 @@ static ssize_t device_read(struct file *filp, /* see include/linux/fs.h   */
  * Called when a process writes to dev file: echo "hi" > /dev/UNGS
  */
 static ssize_t device_write(struct file *filp, const char *tmp, size_t length, loff_t *offset) {
-	/* Que debemos hacer ? */
-  return length;
+    if (copy_from_user(msg, tmp, length))
+        return -EFAULT;
+
+    *offset += length;
+    return length;
 }
