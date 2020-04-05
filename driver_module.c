@@ -28,8 +28,6 @@ static ssize_t device_write(struct file *, const char *, size_t, loff_t *);
 static int Major;
 static int Device_Open = 0;
 static char msg[BUF_LEN];
-static int msg_length = 0;
-
 static struct file_operations fops = {
 	.owner = THIS_MODULE,
 	/* OPS ??? */
@@ -108,6 +106,9 @@ static ssize_t device_read(struct file *filp, /* see include/linux/fs.h   */
                            size_t length,     /* length of the buffer     */
                            loff_t *offset)
 {
+    int msg_length;
+
+    msg_length = length;
     /* If position is behind the end of a file we have nothing to read */
     if( *offset >= sizeof(msg) ) {
         return 0;
@@ -131,9 +132,17 @@ static ssize_t device_read(struct file *filp, /* see include/linux/fs.h   */
  * Called when a process writes to dev file: echo "hi" > /dev/UNGS
  */
 static ssize_t device_write(struct file *filp, const char *tmp, size_t length, loff_t *offset) {
-    if (copy_from_user(msg, tmp, length))
+    int msg_length;
+
+    msg_length = length;
+    /* overwrite buffer protection */
+    if(length > sizeof(msg)){
+        msg_length = sizeof(msg);
+    }
+
+    if (copy_from_user(msg, tmp, msg_length))
         return -EFAULT;
 
-    *offset += length;
-    return length;
+    *offset += msg_length;
+    return msg_length;
 }
