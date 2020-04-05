@@ -13,7 +13,7 @@ void main(int argc,char *argv[])
 		printf("usage: write device message\n");
 		exit(0);
 	}
-	fd=open(argv[1],O_CREAT | O_WRONLY,S_IRUSR);
+	fd=open(argv[1], O_WRONLY,0);
     if(fd==-1){
         printf("Error file is not created.\n");
         exit(-1);

@@ -13,6 +13,7 @@ write:
 
 test:
 	rm -f test.txt
+	touch test.txt
 	./write test.txt prueba
 	./read test.txt 2
 	./read test.txt 4 2
