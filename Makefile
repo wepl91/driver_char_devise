@@ -10,3 +10,9 @@ read:
 	cc     read.c -o read
 write:
 	cc     write.c -o write
+
+test:
+	rm -f test.txt
+	./write test.txt prueba
+	./read test.txt 2
+	./read test.txt 4 2
