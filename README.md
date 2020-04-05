@@ -1,5 +1,5 @@
 # CHAR DEVISE DRIVER
 * Materia: Sistemas Operativos y Redes II
 * Alumnos: 
-  - Cappeche Bruno
+  - Capecce Bruno
   - Pereyra Lopez Walter
